@@ -1,0 +1,30 @@
+:root {
+  --bg-0: #05070f;
+  --bg-1: #0a1020;
+  --bg-2: #0f1b33;
+  --surface: rgba(10, 14, 28, 0.7);
+  --surface-strong: rgba(13, 20, 40, 0.85);
+  --ink: #e8f0ff;
+  --ink-soft: #b7c4e4;
+  --accent: #4f7cff;
+  --accent-2: #5de1ff;
+  --mint: #4fe3c1;
+  --sunrise: #f3b05a;
+}
+
+.theme-gradient {
+  background-image:
+    radial-gradient(circle at 10% 15%, rgba(93, 225, 255, 0.18), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(79, 124, 255, 0.18), transparent 40%),
+    radial-gradient(circle at 40% 90%, rgba(243, 176, 90, 0.12), transparent 45%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1) 40%, var(--bg-2));
+}
+
+.surface-card {
+  background: linear-gradient(135deg, rgba(10, 14, 28, 0.7), rgba(14, 26, 52, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glow-ring {
+  box-shadow: 0 0 40px rgba(93, 225, 255, 0.14), 0 0 70px rgba(79, 124, 255, 0.12);
+}

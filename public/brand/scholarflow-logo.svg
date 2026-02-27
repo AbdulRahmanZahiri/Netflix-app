@@ -1,0 +1,28 @@
+<svg width="560" height="140" viewBox="0 0 560 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sfGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5DE1FF" />
+      <stop offset="55%" stop-color="#4F7CFF" />
+      <stop offset="100%" stop-color="#2A4BFF" />
+    </linearGradient>
+    <linearGradient id="sfGlow" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8CFBFF" />
+      <stop offset="100%" stop-color="#5A7BFF" />
+    </linearGradient>
+  </defs>
+  <g>
+    <path d="M70 22c18 0 32 14 32 32v32c0 18-14 32-32 32s-32-14-32-32V54c0-18 14-32 32-32z" fill="url(#sfGradient)" opacity="0.18"/>
+    <path d="M68 28c-10 3-18 13-18 25v34c0 14 11 25 25 25 8 0 15-4 20-10" stroke="url(#sfGradient)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M76 28c12 3 20 14 20 26v32c0 14-11 25-25 25" stroke="url(#sfGradient)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M70 34v72" stroke="url(#sfGlow)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="106" cy="52" r="6" fill="url(#sfGradient)"/>
+    <circle cx="112" cy="78" r="6" fill="url(#sfGradient)"/>
+    <circle cx="98" cy="100" r="6" fill="url(#sfGradient)"/>
+    <circle cx="40" cy="56" r="6" fill="url(#sfGradient)"/>
+    <circle cx="34" cy="84" r="6" fill="url(#sfGradient)"/>
+  </g>
+  <g>
+    <text x="150" y="88" font-family="Sora, Arial, sans-serif" font-size="56" font-weight="600" fill="#EAF2FF">Scholar</text>
+    <text x="350" y="88" font-family="Sora, Arial, sans-serif" font-size="56" font-weight="600" fill="url(#sfGradient)">Flow</text>
+  </g>
+</svg>

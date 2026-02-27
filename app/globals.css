@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../styles/theme.css";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--ink);
+  background: var(--bg-0);
+  font-feature-settings: "ss01" on, "ss02" on;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: rgba(93, 225, 255, 0.25);
+}
+
+.gradient-text {
+  background: linear-gradient(120deg, #e9f3ff 10%, #7fe1ff 40%, #4f7cff 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
