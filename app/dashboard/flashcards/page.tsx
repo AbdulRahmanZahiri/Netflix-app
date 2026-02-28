@@ -14,9 +14,25 @@ type Flashcard = {
   next_review: string;
 };
 
+const demoCards = [
+  {
+    question: "Define oxidative phosphorylation.",
+    answer: "ATP production via electron transport chain and chemiosmosis."
+  },
+  {
+    question: "What is heteroskedasticity?",
+    answer: "Non-constant variance of errors across observations."
+  },
+  {
+    question: "What is a design token?",
+    answer: "A named design value that powers consistent UI decisions."
+  }
+];
+
 export default function FlashcardsPage() {
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [form, setForm] = useState({ question: "", answer: "" });
 
   const loadCards = () =>
@@ -31,6 +47,7 @@ export default function FlashcardsPage() {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+    setNotice(null);
 
     await apiFetch<Flashcard>("/api/flashcards", {
       method: "POST",
@@ -55,6 +72,18 @@ export default function FlashcardsPage() {
     loadCards();
   };
 
+  const generateFromNotes = async () => {
+    setNotice("Generating demo flashcards from notes...");
+    for (const card of demoCards) {
+      await apiFetch("/api/flashcards", {
+        method: "POST",
+        body: JSON.stringify(card)
+      });
+    }
+    setNotice("Demo flashcards created.");
+    loadCards();
+  };
+
   return (
     <div className="space-y-8">
       <SectionHeader
@@ -67,12 +96,17 @@ export default function FlashcardsPage() {
           {error}
         </div>
       ) : null}
+      {notice ? (
+        <div className="rounded-xl border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan">
+          {notice}
+        </div>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="surface-card rounded-2xl p-6 shadow-soft">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-ink">Next review</h3>
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" onClick={generateFromNotes}>
               Generate from notes
             </Button>
           </div>

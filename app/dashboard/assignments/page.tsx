@@ -26,6 +26,7 @@ export default function AssignmentsPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
     course_id: "",
@@ -56,6 +57,7 @@ export default function AssignmentsPage() {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+    setNotice(null);
 
     await apiFetch<Assignment>("/api/assignments", {
       method: "POST",
@@ -84,6 +86,10 @@ export default function AssignmentsPage() {
     loadAll();
   };
 
+  const syncCalendar = () => {
+    setNotice("Calendar sync will be available soon. Use the local planner for now.");
+  };
+
   return (
     <div className="space-y-8">
       <SectionHeader
@@ -96,12 +102,17 @@ export default function AssignmentsPage() {
           {error}
         </div>
       ) : null}
+      {notice ? (
+        <div className="rounded-xl border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan">
+          {notice}
+        </div>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="surface-card rounded-2xl p-6 shadow-soft">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-ink">Upcoming</h3>
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" onClick={syncCalendar}>
               Sync calendar
             </Button>
           </div>

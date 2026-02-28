@@ -15,9 +15,58 @@ type Course = {
   exam_date: string | null;
 };
 
+const demoCourses = [
+  {
+    name: "Biochemistry",
+    difficulty: 5,
+    weekly_hours: 6,
+    exam_date: "2026-04-12",
+    grading_weights: "Midterm 30%, Final 40%, Labs 30%"
+  },
+  {
+    name: "Econometrics",
+    difficulty: 4,
+    weekly_hours: 4,
+    exam_date: "2026-04-20",
+    grading_weights: "Problem sets 40%, Midterm 20%, Final 40%"
+  },
+  {
+    name: "Design Systems",
+    difficulty: 3,
+    weekly_hours: 3,
+    exam_date: "2026-05-02",
+    grading_weights: "Projects 50%, Quiz 20%, Final 30%"
+  }
+];
+
+const demoAssignments = [
+  {
+    course: "Biochemistry",
+    title: "Midterm Review",
+    due_date: "2026-03-12",
+    weight: 25,
+    estimated_hours: 5
+  },
+  {
+    course: "Econometrics",
+    title: "Problem Set 4",
+    due_date: "2026-03-10",
+    weight: 15,
+    estimated_hours: 3
+  },
+  {
+    course: "Design Systems",
+    title: "Design Systems Quiz",
+    due_date: "2026-03-15",
+    weight: 10,
+    estimated_hours: 2
+  }
+];
+
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     difficulty: 3,
@@ -38,6 +87,7 @@ export default function CoursesPage() {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+    setNotice(null);
 
     await apiFetch<Course>("/api/courses", {
       method: "POST",
@@ -59,6 +109,38 @@ export default function CoursesPage() {
     loadCourses();
   };
 
+  const importSyllabus = async () => {
+    setError(null);
+    setNotice("Importing demo syllabus data...");
+
+    const created: Course[] = [];
+    for (const course of demoCourses) {
+      const newCourse = await apiFetch<Course>("/api/courses", {
+        method: "POST",
+        body: JSON.stringify(course)
+      });
+      created.push(newCourse);
+    }
+
+    for (const assignment of demoAssignments) {
+      const course = created.find((item) => item.name === assignment.course);
+      if (!course) continue;
+      await apiFetch("/api/assignments", {
+        method: "POST",
+        body: JSON.stringify({
+          course_id: course.id,
+          title: assignment.title,
+          due_date: assignment.due_date,
+          weight: assignment.weight,
+          estimated_hours: assignment.estimated_hours
+        })
+      });
+    }
+
+    setNotice("Demo syllabus data imported.");
+    loadCourses();
+  };
+
   return (
     <div className="space-y-8">
       <SectionHeader
@@ -71,12 +153,17 @@ export default function CoursesPage() {
           {error}
         </div>
       ) : null}
+      {notice ? (
+        <div className="rounded-xl border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan">
+          {notice}
+        </div>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="surface-card rounded-2xl p-6 shadow-soft">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-ink">Active courses</h3>
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" onClick={importSyllabus}>
               Import syllabus
             </Button>
           </div>

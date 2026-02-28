@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StatCard } from "@/components/StatCard";
 import { SectionHeader } from "@/components/SectionHeader";
 import { ProgressBar } from "@/components/ProgressBar";
@@ -14,6 +14,14 @@ type Metrics = {
   status: string;
 };
 
+type Assignment = {
+  id: string;
+  title: string;
+  due_date: string;
+  course_name?: string;
+  completed: boolean;
+};
+
 const fallbackMetrics: Metrics = {
   totalCourses: 0,
   upcomingDeadlines: 0,
@@ -22,15 +30,34 @@ const fallbackMetrics: Metrics = {
   status: "On-track"
 };
 
+function daysUntil(date: string) {
+  const today = new Date();
+  const due = new Date(date + "T00:00:00");
+  return Math.max(0, Math.ceil((due.getTime() - today.getTime()) / 86400000));
+}
+
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<Metrics>(fallbackMetrics);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiFetch<Metrics>("/api/metrics")
-      .then(setMetrics)
+    Promise.all([
+      apiFetch<Metrics>("/api/metrics"),
+      apiFetch<Assignment[]>("/api/assignments")
+    ])
+      .then(([metricsData, assignmentData]) => {
+        setMetrics(metricsData);
+        setAssignments(assignmentData.filter((assignment) => !assignment.completed));
+      })
       .catch((err) => setError(err.message));
   }, []);
+
+  const upcomingAssignments = useMemo(() => {
+    return [...assignments]
+      .sort((a, b) => daysUntil(a.due_date) - daysUntil(b.due_date))
+      .slice(0, 3);
+  }, [assignments]);
 
   return (
     <div className="space-y-8">
@@ -62,36 +89,28 @@ export default function DashboardPage() {
             subtitle="Urgency-sorted assignments with recommended sessions."
           />
           <div className="mt-6 space-y-4">
-            {[
-              {
-                title: "Biochem Midterm Review",
-                detail: "3 x 50-min focus blocks",
-                status: "High priority"
-              },
-              {
-                title: "Econometrics Problem Set",
-                detail: "2 x 50-min focus blocks",
-                status: "Due in 3 days"
-              },
-              {
-                title: "Design Systems Quiz",
-                detail: "1 x 50-min focus block",
-                status: "Due in 6 days"
-              }
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-ink">{item.title}</p>
-                  <p className="text-xs text-slate/70">{item.detail}</p>
+            {upcomingAssignments.length === 0 ? (
+              <p className="text-sm text-slate/70">
+                Add assignments to see your weekly focus list.
+              </p>
+            ) : (
+              upcomingAssignments.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-ink">{item.title}</p>
+                    <p className="text-xs text-slate/70">
+                      {item.course_name} - Due in {daysUntil(item.due_date)} days
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-cyan/20 px-3 py-1 text-xs font-medium text-cyan">
+                    Focus block
+                  </span>
                 </div>
-                <span className="rounded-full bg-cyan/20 px-3 py-1 text-xs font-medium text-cyan">
-                  {item.status}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
